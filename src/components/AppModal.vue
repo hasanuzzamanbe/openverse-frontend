@@ -58,11 +58,11 @@ export default {
 <style lang="scss" scoped>
 .modal {
   position: relative;
-  margin: 0px auto;
+  margin: 0 auto;
   max-width: 85vw;
   max-height: 85vh;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   border-radius: 2px;
   box-shadow: 0 2px 8px 3px;
   background-color: #fff;
