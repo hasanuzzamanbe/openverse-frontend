@@ -1,18 +1,18 @@
-import Vuex from 'vuex'
-import { createLocalVue } from '@vue/test-utils'
 import SearchGridForm from '~/components/SearchGridForm'
 import render from '../../test-utils/render'
-describe('BrowsePage', () => {
-  it('should render correct contents', () => {
-    const localVue = createLocalVue()
-    localVue.use(Vuex)
 
+describe('SearchGridForm', () => {
+  it('should render correct contents', () => {
     const wrapper = render(SearchGridForm, {
-      localVue,
       mocks: {
+        $store: {
+          state: {
+            filter: { isFilterVisible: true },
+            search: { query: { q: 'foo' } },
+          },
+        },
         $route: {
           path: '/search',
-          $store: { state: { isFilterVisible: true } },
         },
       },
     })

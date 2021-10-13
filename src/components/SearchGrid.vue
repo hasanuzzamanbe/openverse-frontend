@@ -19,7 +19,7 @@ export default {
   }),
   computed: {
     query() {
-      return this.$store.state.query
+      return this.$store.state.search.query
     },
   },
   mounted() {

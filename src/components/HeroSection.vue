@@ -65,9 +65,10 @@
 </template>
 
 <script>
-import { SET_QUERY, SET_SEARCH_TYPE } from '~/constants/mutation-types'
+import { SET_Q, SET_SEARCH_TYPE } from '~/constants/mutation-types'
 import { filtersToQueryData } from '~/utils/search-query-transform'
 import { ALL_MEDIA } from '~/constants/media'
+import { SEARCH } from '~/constants/store-modules'
 
 export default {
   name: 'HeroSection',
@@ -95,7 +96,9 @@ export default {
       return this.form.searchType
     },
     onSubmit() {
-      this.$store.commit(SET_QUERY, { query: { q: this.form.searchTerm } })
+      this.$store.commit(`${SEARCH}/${SET_Q}`, {
+        q: this.form.searchTerm,
+      })
 
       if (process.env.enableAudio) {
         this.$store.commit(SET_SEARCH_TYPE, {
@@ -107,7 +110,7 @@ export default {
         path: this.getPath(),
         query: {
           q: this.form.searchTerm,
-          ...filtersToQueryData(this.$store.state.filters, this.getMediaType()),
+          ...filtersToQueryData(this.$store.state.filter.filters, this.getMediaType()),
         },
       })
       this.$router.push(newPath)

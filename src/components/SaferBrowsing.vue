@@ -56,11 +56,11 @@ export default {
   },
   computed: {
     mature() {
-      return this.$store.state.filters.mature
+      return this.$store.state.filter.filters.mature
     },
   },
   methods: {
-    ...mapActions({ toggleFilter: TOGGLE_FILTER }),
+    ...mapActions('filter', { toggleFilter: TOGGLE_FILTER }),
     toggleShowForm() {
       this.showForm = !this.showForm
     },

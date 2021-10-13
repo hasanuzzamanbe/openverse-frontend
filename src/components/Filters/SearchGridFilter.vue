@@ -17,11 +17,15 @@ import {
   CLEAR_FILTERS,
 } from '~/constants/mutation-types'
 import { TOGGLE_FILTER } from '~/constants/action-types'
+import { FILTER } from '~/constants/store-modules'
 
 export default {
   name: 'SearchGridFilter',
   computed: {
-    ...mapState(['filters', 'isFilterVisible']),
+    ...mapState({
+      filters: (state) => state.filter.filters,
+      isFilterVisible: (state) => state.filter.isFilterVisible,
+    }),
     /**
      * Show filters expanded by default
      * @todo: The A/B test is over and we're going with the expanded view. Can remove a lot of this old test logic
@@ -33,11 +37,11 @@ export default {
   },
   methods: {
     ...mapActions({
-      toggleFilter: TOGGLE_FILTER,
+      toggleFilter: `${FILTER}/${TOGGLE_FILTER}`,
+      clearFilters: `${FILTER}/${CLEAR_FILTERS}`,
     }),
     ...mapMutations({
-      setFilterVisible: SET_FILTER_IS_VISIBLE,
-      clearFilters: CLEAR_FILTERS,
+      setFilterVisible: `${FILTER}/${SET_FILTER_IS_VISIBLE}`,
     }),
     onUpdateFilter({ code, filterType }) {
       this.toggleFilter({ code, filterType })

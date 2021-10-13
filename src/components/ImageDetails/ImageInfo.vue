@@ -72,7 +72,7 @@ export default {
   computed: {
     providerName() {
       return getProviderName(
-        this.$store.state.imageProviders,
+        this.$store.state.provider.imageProviders,
         this.$props.image.provider
       )
     },
@@ -84,7 +84,7 @@ export default {
     },
     sourceName() {
       return getProviderName(
-        this.$store.state.imageProviders,
+        this.$store.state.provider.imageProviders,
         this.$props.image.source
       )
     },

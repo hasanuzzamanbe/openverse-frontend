@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import { kebabize } from '~/utils/format-strings'
 import { AUDIO, IMAGE, VIDEO } from '~/constants/media'
 import FilterChecklist from './FilterChecklist'
@@ -60,7 +60,8 @@ export default {
     FilterChecklist,
   },
   computed: {
-    ...mapGetters([
+    ...mapState('search', ['searchType']),
+    ...mapGetters('filter', [
       'audioFiltersForDisplay',
       'imageFiltersForDisplay',
       'videoFiltersForDisplay',
@@ -68,7 +69,7 @@ export default {
       'isAnyFilterApplied',
     ]),
     filters() {
-      switch (this.$store.state.searchType) {
+      switch (this.searchType) {
         case AUDIO:
           return this.audioFiltersForDisplay
         case IMAGE:

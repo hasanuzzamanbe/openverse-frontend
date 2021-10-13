@@ -23,12 +23,13 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapState } from 'vuex'
 import { FETCH_AUDIO } from '~/constants/action-types'
 import iframeHeight from '~/mixins/iframe-height'
 import { AUDIO } from '~/constants/media'
 import attributionHtml from '~/utils/attribution-html'
 import { getFullLicenseName } from '~/utils/license'
+import { SEARCH } from '~/constants/store-modules'
 
 const AudioDetailPage = {
   name: 'AudioDetailPage',
@@ -47,7 +48,10 @@ const AudioDetailPage = {
     }
   },
   computed: {
-    ...mapState(['query', 'audio']),
+    ...mapState({
+      query: (state) => state.search.query,
+      audio: (state) => state.search.audio,
+    }),
     filter() {
       return this.query.filter
     },
@@ -68,7 +72,7 @@ const AudioDetailPage = {
   },
   async asyncData({ env, store, route, error, app }) {
     try {
-      await store.dispatch(FETCH_AUDIO, { id: route.params.id })
+      await store.dispatch(`${SEARCH}/${FETCH_AUDIO}`, { id: route.params.id })
       return {
         thumbnailURL: `${env.apiUrl}thumbs/${route.params.id}`,
         id: route.params.id,
@@ -92,7 +96,6 @@ const AudioDetailPage = {
     })
   },
   methods: {
-    ...mapActions([FETCH_AUDIO]),
     attributionHtml() {
       const licenseUrl = `${this.licenseUrl}&atype=html`
       return attributionHtml(this.audio, licenseUrl, this.fullLicenseName)

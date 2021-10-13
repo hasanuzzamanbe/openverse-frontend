@@ -18,6 +18,7 @@
 <script>
 import { UPDATE_SEARCH_TYPE } from '~/constants/action-types'
 import { AUDIO } from '~/constants/media'
+import { SEARCH } from '~/constants/store-modules'
 
 export default {
   name: 'AudioSearch',
@@ -29,11 +30,13 @@ export default {
   },
   computed: {
     query() {
-      return this.$store.state.query
+      return this.$store.state.search.query
     },
   },
   async mounted() {
-    await this.$store.dispatch(UPDATE_SEARCH_TYPE, { searchType: AUDIO })
+    await this.$store.dispatch(`${SEARCH}/${UPDATE_SEARCH_TYPE}`, {
+      searchType: AUDIO,
+    })
   },
   methods: {
     onLoadMoreAudios(searchParams) {

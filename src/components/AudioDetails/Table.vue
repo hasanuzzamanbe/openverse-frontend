@@ -79,13 +79,13 @@ export default {
   computed: {
     providerName() {
       return getProviderName(
-        this.$store.state.audioProviders,
+        this.$store.state.provider.audioProviders,
         this.$props.audio.provider
       )
     },
     sourceName() {
       return getProviderName(
-        this.$store.state.audioProviders,
+        this.$store.state.provider.audioProviders,
         this.$props.audio.source
       )
     },

@@ -1,6 +1,8 @@
 import HeroSection from '~/components/HeroSection'
 import render from '../../test-utils/render'
-import { filterData } from '~/store-modules/filter-store'
+import { filterData } from '~/store/filter'
+import { SEARCH } from '~/constants/store-modules'
+import { SET_Q } from '~/constants/mutation-types'
 
 describe('HeroSection', () => {
   let options = {}
@@ -16,7 +18,7 @@ describe('HeroSection', () => {
         },
         $store: {
           commit: commitMock,
-          state: { filters: filterData },
+          state: { filter: { filters: filterData } },
         },
       },
     }
@@ -36,8 +38,8 @@ describe('HeroSection', () => {
     await input.trigger('change')
     await form.trigger('submit.prevent')
 
-    expect(commitMock).toHaveBeenCalledWith('SET_QUERY', {
-      query: { q: 'me' },
+    expect(commitMock).toHaveBeenCalledWith(`${SEARCH}/${SET_Q}`, {
+      q: 'me',
     })
   })
 })

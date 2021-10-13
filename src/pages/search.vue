@@ -22,17 +22,17 @@
   </div>
 </template>
 <script>
-import { FETCH_MEDIA, SET_SEARCH_TYPE_FROM_URL } from '~/constants/action-types'
 import {
-  SET_QUERY,
-  SET_FILTER_IS_VISIBLE,
+  FETCH_MEDIA,
   SET_FILTERS_FROM_URL,
-} from '~/constants/mutation-types'
+  SET_SEARCH_TYPE_FROM_URL,
+} from '~/constants/action-types'
+import { SET_QUERY, SET_FILTER_IS_VISIBLE } from '~/constants/mutation-types'
 import { queryStringToQueryData } from '~/utils/search-query-transform'
 import local from '~/utils/local'
 import { screenWidth } from '~/utils/get-browser-info'
 import { ALL_MEDIA, IMAGE } from '~/constants/media'
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 
 const BrowsePage = {
   name: 'browse-page',
@@ -63,28 +63,28 @@ const BrowsePage = {
     })
   },
   computed: {
-    query() {
-      return this.$store.state.query
-    },
-    isFilterVisible() {
-      return this.$store.state.isFilterVisible
-    },
+    ...mapState({
+      query: (state) => state.search.query,
+      isFilterVisible: (state) => state.filter.isFilterVisible,
+    }),
     mediaType() {
       // Default to IMAGE until media search/index is generalized
-      return this.$store.state.searchType != ALL_MEDIA
-        ? this.$store.state.searchType
+      return this.$store.state.search.searchType !== ALL_MEDIA
+        ? this.$store.state.search.searchType
         : IMAGE
     },
   },
   methods: {
-    ...mapActions({
+    ...mapActions('search', {
       fetchMedia: FETCH_MEDIA,
       setSearchTypeFromUrl: SET_SEARCH_TYPE_FROM_URL,
     }),
-    ...mapMutations({
+    ...mapActions('filter', { setFiltersFromUrl: SET_FILTERS_FROM_URL }),
+    ...mapMutations('search', {
       setQuery: SET_QUERY,
+    }),
+    ...mapMutations('filter', {
       setFilterVisibility: SET_FILTER_IS_VISIBLE,
-      setFiltersFromUrl: SET_FILTERS_FROM_URL,
     }),
     getMediaItems(params, mediaType) {
       this.fetchMedia({ ...params, mediaType })
@@ -111,7 +111,7 @@ const BrowsePage = {
       if (newQuery) {
         const newPath = this.localePath({
           path: this.$route.path,
-          query: this.$store.state.query,
+          query: this.$store.state.search.query,
         })
         this.$router.push(newPath)
         this.getMediaItems(newQuery, this.mediaType)

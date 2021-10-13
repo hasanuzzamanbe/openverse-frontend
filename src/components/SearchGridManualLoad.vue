@@ -67,6 +67,7 @@ import { FETCH_MEDIA } from '~/constants/action-types'
 import { SET_MEDIA } from '~/constants/mutation-types'
 import { IMAGE } from '~/constants/media'
 import { mapActions, mapMutations, mapState } from 'vuex'
+import { SEARCH } from '~/constants/store-modules'
 
 export default {
   name: 'SearchGridManualLoad',
@@ -99,19 +100,19 @@ export default {
   async fetch() {
     if (!this.storeImages.length) {
       await this.fetchMedia({
-        ...this.$store.state.query,
+        ...this.$store.state.search.query,
         mediaType: IMAGE,
       })
     }
   },
   computed: {
     ...mapState({
-      isFetchingImages: 'isFetching.images',
-      isFetchingImagesError: 'isFetchingError.images',
-      storeImages: 'images',
-      storeImagesCount: 'imagesCount',
-      currentPage: 'imagePage',
-      _errorMessage: 'errorMessage',
+      storeImagesCount: (state) => state.search.imagesCount,
+      currentPage: (state) => state.search.imagePage,
+      _errorMessage: (state) => state.search.errorMessage,
+      storeImages: (state) => state.search.images,
+      isFetchingImages: (state) => state.search.isFetching.images,
+      isFetchingImagesError: (state) => state.search.isFetchingError.images,
     }),
     _images() {
       return this.useInfiniteScroll ? this.storeImages : this.images
@@ -135,7 +136,7 @@ export default {
       return this.$props.query
     },
     isFinished() {
-      return this.currentPage >= this.$store.state.pageCount.images
+      return this.currentPage >= this.$store.state.search.pageCount.images
     },
   },
   watch: {
@@ -147,12 +148,8 @@ export default {
     },
   },
   methods: {
-    ...mapMutations({
-      setMedia: SET_MEDIA,
-    }),
-    ...mapActions({
-      fetchMedia: FETCH_MEDIA,
-    }),
+    ...mapMutations({ setMedia: `${SEARCH}/${SET_MEDIA}` }),
+    ...mapActions({ fetchMedia: `${SEARCH}/${FETCH_MEDIA}` }),
     searchChanged() {
       this.setMedia({ media: [], page: 1 })
     },

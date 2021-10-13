@@ -125,8 +125,9 @@
 </template>
 
 <script>
-import { SET_QUERY } from '~/constants/mutation-types'
+import { SET_Q } from '~/constants/mutation-types'
 import Dropdown from '~/components/Dropdown'
+import { SEARCH } from '~/constants/store-modules'
 
 export default {
   name: 'NavSection',
@@ -144,10 +145,11 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.$store.commit(SET_QUERY, { query: { q: this.form.searchTerm } })
+      const q = this.form.searchTerm
+      this.$store.commit(`${SEARCH}/${SET_Q}`, { q })
       const newPath = this.localePath({
         path: '/search',
-        query: { q: this.form.searchTerm },
+        query: { q },
       })
       this.$router.push(newPath)
     },

@@ -60,19 +60,21 @@ export default {
   async fetch() {
     if (!this.audios.length) {
       await this.fetchMedia({
-        ...this.$store.state.query,
+        ...this.$store.state.search.query,
         mediaType: AUDIO,
       })
     }
   },
   computed: {
-    ...mapState(['audios', 'errorMessage', 'isFilterVisible']),
     ...mapState({
-      isFetchingAudios: 'isFetching.audios',
-      isFetchingAudiosError: 'isFetchingError.audios',
-      resultsCount: 'audiosCount',
-      currentPage: 'audioPage',
-      audioPageCount: 'pageCount.audios',
+      audios: (state) => state.search.audios,
+      errorMessage: (state) => state.search.errorMessage,
+      isFetchingAudios: (state) => state.search.isFetching.audios,
+      isFetchingAudiosError: (state) => state.search.isFetchingError.audios,
+      resultsCount: (state) => state.search.audiosCount,
+      currentPage: (state) => state.search.audioPage,
+      audioPageCount: (state) => state.search.pageCount.audios,
+      isFilterVisible: (state) => state.filter.isFilterVisible,
     }),
     audiosCount() {
       const count = this.resultsCount
@@ -95,7 +97,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions({
+    ...mapActions('search', {
       fetchMedia: FETCH_MEDIA,
     }),
     onLoadMoreAudios() {

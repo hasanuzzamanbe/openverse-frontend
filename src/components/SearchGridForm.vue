@@ -63,19 +63,19 @@
 import { SET_FILTER_IS_VISIBLE } from '~/constants/mutation-types'
 import { queryStringToSearchType } from '~/utils/search-query-transform'
 import { VIDEO } from '~/constants/media'
+import { FILTER } from '~/constants/store-modules'
+import { mapState } from 'vuex'
 
 export default {
   name: 'SearchGridForm',
   data: () => ({ searchTermsModel: null }),
   computed: {
+    ...mapState({
+      isFilterVisible: (state) => state.filter.isFilterVisible,
+      searchTerms: (state) => state.search.query.q,
+    }),
     activeTab() {
       return queryStringToSearchType(this.$route.path)
-    },
-    searchTerms() {
-      return this.$store.state.query.q
-    },
-    isFilterVisible() {
-      return this.$store.state.isFilterVisible
     },
     searchBoxPlaceholder() {
       return this.$t('browse-page.search-form.placeholder', {
@@ -110,7 +110,7 @@ export default {
       }
     },
     onToggleSearchGridFilter() {
-      this.$store.commit(SET_FILTER_IS_VISIBLE, {
+      this.$store.commit(`${FILTER}/${SET_FILTER_IS_VISIBLE}`, {
         isFilterVisible: !this.isFilterVisible,
       })
     },

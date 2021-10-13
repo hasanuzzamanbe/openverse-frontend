@@ -17,7 +17,8 @@
 </template>
 
 <script>
-import { SET_QUERY } from '~/constants/mutation-types'
+import { SET_Q } from '~/constants/mutation-types'
+import { SEARCH } from '~/constants/store-modules'
 
 export default {
   name: 'AudioTags',
@@ -32,7 +33,7 @@ export default {
       return provider === 'clarifai'
     },
     searchByTagName(query) {
-      this.$store.commit(SET_QUERY, { query: { q: query } })
+      this.$store.commit(`${SEARCH}/${SET_Q}`, { q: query })
     },
     getValidTags() {
       return this.$props.tags.filter((tag) => !!tag.name)

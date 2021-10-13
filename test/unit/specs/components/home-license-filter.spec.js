@@ -1,5 +1,7 @@
 import HomeLicenseFilter from '~/components/HomeLicenseFilter'
-import render from '../../test-utils/render'
+import { render, screen } from '@testing-library/vue'
+import { TOGGLE_FILTER } from '~/constants/action-types'
+import { FILTER } from '~/constants/store-modules'
 
 describe('HomeLicenseFilter', () => {
   let options = {}
@@ -12,11 +14,13 @@ describe('HomeLicenseFilter', () => {
         $store: {
           dispatch: dispatchMock,
           state: {
-            filters: {
-              licenseTypes: [
-                { code: 'commercial', name: 'Commercial usage' },
-                { code: 'modification', name: 'Allows modification' },
-              ],
+            filter: {
+              filters: {
+                licenseTypes: [
+                  { code: 'commercial', name: 'Commercial usage' },
+                  { code: 'modification', name: 'Allows modification' },
+                ],
+              },
             },
           },
         },
@@ -25,17 +29,25 @@ describe('HomeLicenseFilter', () => {
   })
 
   it('renders checkboxes', () => {
-    const wrapper = render(HomeLicenseFilter, options)
-    expect(wrapper.find('#commercial').element).toBeDefined()
-    expect(wrapper.find('#modification').element).toBeDefined()
+    render(HomeLicenseFilter, options)
+    const checkboxes = screen.queryAllByRole('checkbox')
+    expect(checkboxes.length).toEqual(2)
+
+    const commercialCheckbox = screen.queryByLabelText('Commercial usage')
+    expect(commercialCheckbox).toBeTruthy()
+
+    const modificationCheckbox = screen.queryByLabelText('Allows modification')
+    expect(modificationCheckbox).toBeTruthy()
   })
 
   it('dispatches `TOGGLE_FILTER` when checkboxes selected', async () => {
-    const wrapper = render(HomeLicenseFilter, options)
-    const commercialChk = wrapper.find('#commercial')
+    render(HomeLicenseFilter, options)
+    const commercialCheckbox = screen.queryByLabelText('Commercial usage')
+    await commercialCheckbox.click()
+    const checked = screen.queryAllByRole('checkbox', { checked: true })
 
-    await commercialChk.setChecked(true)
-    expect(dispatchMock).toHaveBeenCalledWith('TOGGLE_FILTER', {
+    expect(checked.length).toEqual(1)
+    expect(dispatchMock).toHaveBeenCalledWith(`${FILTER}/${TOGGLE_FILTER}`, {
       code: 'commercial',
       filterType: 'licenseTypes',
     })
