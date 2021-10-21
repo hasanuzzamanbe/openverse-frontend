@@ -2,29 +2,43 @@ import HomeLicenseFilter from '~/components/HomeLicenseFilter'
 import { render, screen } from '@testing-library/vue'
 import { TOGGLE_FILTER } from '~/constants/action-types'
 import { FILTER } from '~/constants/store-modules'
+import { createLocalVue } from '@vue/test-utils'
+import Vuex from 'vuex'
 
 describe('HomeLicenseFilter', () => {
   let options = {}
+  let localVue = null
   let dispatchMock = null
+  let toggleMock = null
+  let mockStore = null
 
   beforeEach(() => {
     dispatchMock = jest.fn()
-    options = {
-      mocks: {
-        $store: {
-          dispatch: dispatchMock,
+    toggleMock = jest.fn()
+
+    localVue = createLocalVue()
+    localVue.use(Vuex)
+    mockStore = new Vuex.Store({
+      modules: {
+        filter: {
+          namespaced: true,
+          actions: {
+            // Without this action, we get '[vuex] unknown local action type' error
+            [TOGGLE_FILTER]: toggleMock,
+          },
           state: {
-            filter: {
-              filters: {
-                licenseTypes: [
-                  { code: 'commercial', name: 'Commercial usage' },
-                  { code: 'modification', name: 'Allows modification' },
-                ],
-              },
+            filters: {
+              licenseTypes: [
+                { code: 'commercial', name: 'Commercial usage' },
+                { code: 'modification', name: 'Allows modification' },
+              ],
             },
           },
         },
       },
+    })
+    options = {
+      store: mockStore,
     }
   })
 
@@ -41,6 +55,7 @@ describe('HomeLicenseFilter', () => {
   })
 
   it('dispatches `TOGGLE_FILTER` when checkboxes selected', async () => {
+    mockStore.dispatch = dispatchMock
     render(HomeLicenseFilter, options)
     const commercialCheckbox = screen.queryByLabelText('Commercial usage')
     await commercialCheckbox.click()

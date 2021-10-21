@@ -69,9 +69,13 @@ import { SET_Q, SET_SEARCH_TYPE } from '~/constants/mutation-types'
 import { filtersToQueryData } from '~/utils/search-query-transform'
 import { ALL_MEDIA } from '~/constants/media'
 import { SEARCH } from '~/constants/store-modules'
+import { mapMutations } from 'vuex'
+import HomeLicenseFilter from '~/components/HomeLicenseFilter'
+import SearchTypeToggle from '~/components/SearchTypeToggle'
 
 export default {
   name: 'HeroSection',
+  components: { HomeLicenseFilter, SearchTypeToggle },
   /**
    * @return {{ form: { searchTerm: string, searchType: 'image' | 'audio' }, showSearchType: boolean }}
    */
@@ -85,6 +89,10 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(SEARCH, {
+      setSearchTerm: SET_Q,
+      setSearchType: SET_SEARCH_TYPE,
+    }),
     getPath() {
       if (!process.env.enableAudio) return '/search'
 
@@ -96,21 +104,20 @@ export default {
       return this.form.searchType
     },
     onSubmit() {
-      this.$store.commit(`${SEARCH}/${SET_Q}`, {
-        q: this.form.searchTerm,
-      })
+      this.setSearchTerm({ q: this.form.searchTerm })
 
       if (process.env.enableAudio) {
-        this.$store.commit(SET_SEARCH_TYPE, {
-          searchType: this.form.searchType,
-        })
+        this.setSearchType({ searchType: this.form.searchType })
       }
 
       const newPath = this.localePath({
         path: this.getPath(),
         query: {
           q: this.form.searchTerm,
-          ...filtersToQueryData(this.$store.state.filter.filters, this.getMediaType()),
+          ...filtersToQueryData(
+            this.$store.state.filter.filters,
+            this.getMediaType()
+          ),
         },
       })
       this.$router.push(newPath)

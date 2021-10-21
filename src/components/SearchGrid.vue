@@ -11,6 +11,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { SEARCH } from '~/constants/store-modules'
+
 export default {
   name: 'SearchGrid',
   props: ['searchTerm'],
@@ -18,9 +21,7 @@ export default {
     showScrollButton: false,
   }),
   computed: {
-    query() {
-      return this.$store.state.search.query
-    },
+    ...mapState(SEARCH, ['query']),
   },
   mounted() {
     document.addEventListener('scroll', this.checkScrollLength)

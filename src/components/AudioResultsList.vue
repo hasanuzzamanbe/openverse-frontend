@@ -1,8 +1,8 @@
 <template>
   <section>
-    <div v-show="!isFetchingAudios && includeAnalytics" class="results-meta">
+    <div v-show="!isFetching" class="results-meta">
       <span class="caption font-semibold">
-        {{ audiosCount }}
+        {{ _audiosCount }}
       </span>
     </div>
     <div class="px-6 pt-6">
@@ -14,9 +14,9 @@
         layout="row"
       />
     </div>
-    <div v-if="!isFetchingAudiosError" class="load-more">
+    <div v-if="!isFetchingError" class="load-more">
       <button
-        v-show="!isFetchingAudios && includeAnalytics"
+        v-show="!isFetching"
         class="button"
         :disabled="isFinished"
         @click="onLoadMoreAudios"
@@ -29,7 +29,7 @@
         }}</span>
         <span v-else>{{ $t('browse-page.load') }}</span>
       </button>
-      <LoadingIcon v-show="isFetchingAudios" />
+      <LoadingIcon v-show="isFetching" />
     </div>
     <div v-if="isFetchingAudiosError" class="m-auto w-1/2 text-center pt-6">
       <h5>
@@ -47,15 +47,13 @@
 <script>
 import { FETCH_MEDIA } from '~/constants/action-types'
 import { AUDIO } from '~/constants/media'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
+import { FILTER, SEARCH } from '~/constants/store-modules'
 
 export default {
   name: 'AudioResultsList',
   props: {
     query: {},
-    includeAnalytics: {
-      default: true,
-    },
   },
   async fetch() {
     if (!this.audios.length) {
@@ -66,18 +64,17 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      audios: (state) => state.search.audios,
-      errorMessage: (state) => state.search.errorMessage,
-      isFetchingAudios: (state) => state.search.isFetching.audios,
-      isFetchingAudiosError: (state) => state.search.isFetchingError.audios,
-      resultsCount: (state) => state.search.audiosCount,
-      currentPage: (state) => state.search.audioPage,
-      audioPageCount: (state) => state.search.pageCount.audios,
-      isFilterVisible: (state) => state.filter.isFilterVisible,
-    }),
-    audiosCount() {
-      const count = this.resultsCount
+    ...mapState(SEARCH, [
+      'audios',
+      'errorMessage',
+      'audiosCount',
+      'audioPage',
+      'pageCount',
+    ]),
+    ...mapGetters(SEARCH, ['isFetching', 'isFetchingError']),
+    ...mapState(FILTER, ['isFilterVisible']),
+    _audiosCount() {
+      const count = this.audiosCount
       if (count === 0) {
         return this.$t('browse-page.audio-no-results')
       }
@@ -90,19 +87,17 @@ export default {
           })
     },
     isFinished() {
-      return this.currentPage >= this.audioPageCount
+      return this.audioPage >= this.pageCount.audio
     },
     audioTrackSize() {
       return this.isFilterVisible ? 'm' : 's'
     },
   },
   methods: {
-    ...mapActions('search', {
-      fetchMedia: FETCH_MEDIA,
-    }),
+    ...mapActions(SEARCH, { fetchMedia: FETCH_MEDIA }),
     onLoadMoreAudios() {
       const searchParams = {
-        page: this.currentPage + 1,
+        page: this.audioPage + 1,
         shouldPersistMedia: true,
         ...this.query,
       }

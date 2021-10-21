@@ -17,9 +17,8 @@
 
 <script>
 import axios from 'axios'
-import { mapActions, mapMutations, mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import { FETCH_IMAGE } from '~/constants/action-types'
-import { SET_IMAGE } from '~/constants/mutation-types'
 import { SEARCH } from '~/constants/store-modules'
 
 const PhotoDetailPage = {
@@ -43,7 +42,7 @@ const PhotoDetailPage = {
     }
   },
   computed: {
-    ...mapState('search', ['images', 'query', 'image']),
+    ...mapState(SEARCH, ['images', 'query', 'image']),
     filter() {
       return this.query.filter
     },
@@ -60,7 +59,7 @@ const PhotoDetailPage = {
   async fetch() {
     try {
       // Load the image
-      await this.$store.dispatch(`${SEARCH}/${FETCH_IMAGE}`, {
+      await this.fetchImage({
         id: this.imageId,
       })
     } catch (err) {
@@ -81,8 +80,7 @@ const PhotoDetailPage = {
     })
   },
   methods: {
-    ...mapActions('search', [FETCH_IMAGE]),
-    ...mapMutations('search', [SET_IMAGE]),
+    ...mapActions(SEARCH, { fetchImage: FETCH_IMAGE }),
     onImageLoaded(event) {
       this.imageWidth = event.target.naturalWidth
       this.imageHeight = event.target.naturalHeight

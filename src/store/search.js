@@ -200,6 +200,15 @@ export const createActions = (services) => ({
   },
 })
 
+export const getters = {
+  isFetching(state) {
+    return state.isFetching[state.searchType]
+  },
+  isFetchingError(state) {
+    return state.isFetchingError[state.searchType]
+  },
+}
+
 export const mutations = {
   [FETCH_START_MEDIA](_state, { mediaType }) {
     const mediaPlural = `${mediaType}s`
@@ -302,6 +311,7 @@ const actions = createActions(mediaServices)
 
 export default {
   state,
+  getters,
   actions,
   mutations,
 }

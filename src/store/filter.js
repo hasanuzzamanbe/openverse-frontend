@@ -172,7 +172,9 @@ const anyFilterApplied = (filters) =>
       return false
     } // this is hardcoded to "false" because we do not show mature in `FilterDisplay.vue` like the other filters
 
-    return filters[filterKey].some((filter) => filter.checked)
+    return (
+      filters[filterKey] && filters[filterKey].some((filter) => filter.checked)
+    )
   })
 
 export const state = () => ({
@@ -186,6 +188,8 @@ export const getters = {
    * Mature filter is not returned because it is not displayed
    * as a filter tag
    * @param state
+   * @param getters
+   * @param rootState
    * @returns {{code: string, name: string, filterType: string}[]}
    */
   appliedFilterTags: (state, getters, rootState) => {

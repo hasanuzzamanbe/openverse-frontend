@@ -25,10 +25,7 @@ export default {
   name: 'FilterDisplay',
   components: { FilterTag },
   computed: {
-    ...mapGetters({
-      appliedFilterTags: 'filter/appliedFilterTags',
-      isAnyFilterApplied: 'filter/isAnyFilterApplied',
-    }),
+    ...mapGetters(FILTER, ['appliedFilterTags', 'isAnyFilterApplied']),
   },
   methods: {
     onUpdateFilter({ code, filterType }) {

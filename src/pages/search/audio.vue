@@ -19,6 +19,7 @@
 import { UPDATE_SEARCH_TYPE } from '~/constants/action-types'
 import { AUDIO } from '~/constants/media'
 import { SEARCH } from '~/constants/store-modules'
+import { mapState } from 'vuex'
 
 export default {
   name: 'AudioSearch',
@@ -29,9 +30,7 @@ export default {
     }
   },
   computed: {
-    query() {
-      return this.$store.state.search.query
-    },
+    ...mapState(SEARCH, ['query']),
   },
   async mounted() {
     await this.$store.dispatch(`${SEARCH}/${UPDATE_SEARCH_TYPE}`, {

@@ -1,109 +1,128 @@
+import Vuex from 'vuex'
+import { fireEvent, render, screen } from '@testing-library/vue'
+import { createLocalVue } from '@vue/test-utils'
 import SearchGridFilter from '~/components/Filters/SearchGridFilter'
-import render from '../../test-utils/render'
-import { FILTER } from '~/constants/store-modules'
-import {
-  CLEAR_FILTERS,
-  SET_FILTER_IS_VISIBLE,
-} from '~/constants/mutation-types'
-import { TOGGLE_FILTER } from '~/constants/action-types'
+import { UPDATE_QUERY } from '~/constants/action-types'
+import { IMAGE } from '~/constants/media'
+import store from '~/store/filter'
+import clonedeep from 'lodash.clonedeep'
+
+const initialFilters = {
+  licenseTypes: [
+    {
+      code: 'commercial',
+      name: 'Commercial usage',
+      checked: false,
+    },
+  ],
+  licenses: [{ code: 'by', name: 'CC-BY', checked: false }],
+  imageCategories: [{ code: 'photo', name: 'Photographs', checked: false }],
+  imageExtensions: [{ code: 'jpg', name: 'JPG', checked: false }],
+  imageProviders: [{ code: 'met', name: 'Metropolitan', checked: false }],
+  audioProviders: [{ code: 'jamendo', name: 'Jamendo', checked: false }],
+  aspectRatios: [],
+  searchBy: [{ code: 'creator', checked: false }],
+  mature: false,
+}
 
 describe('SearchGridFilter', () => {
   let options = {}
-  let storeMock = null
-  let dispatchMock = null
-  let commitMock = null
   let props = null
+  let mockStore
+  let localVue
+  let filters
+
   beforeEach(() => {
-    dispatchMock = jest.fn()
-    commitMock = jest.fn()
-    storeMock = {
-      dispatch: dispatchMock,
-      commit: commitMock,
-      state: {
+    localVue = createLocalVue()
+    localVue.use(Vuex)
+    filters = clonedeep(initialFilters)
+    mockStore = new Vuex.Store({
+      modules: {
         filter: {
-          isFilterApplied: true,
-          isFilterVisible: true,
-          filters: {
-            licenseTypes: [{ code: 'commercial', name: 'Commercial usage' }],
-            licenses: [{ code: 'by', name: 'CC-BY' }],
-            categories: [{ code: 'photo', name: 'Photographs' }],
-            extensions: [{ code: 'jpg', name: 'JPG' }],
-            searchBy: {
-              creator: false,
-            },
-            mature: false,
+          namespaced: true,
+          state: {
+            isFilterVisible: true,
+            filters,
+          },
+          mutations: store.mutations,
+          actions: store.actions,
+          getters: store.getters,
+        },
+        search: {
+          namespaced: true,
+          state: { searchType: IMAGE },
+          actions: {
+            [UPDATE_QUERY]: jest.fn(),
           },
         },
-        query: 'me',
       },
-    }
-
-    props = {
-      showProvidersFilter: true,
-      provider: undefined,
-    }
+    })
 
     options = {
-      stubs: { FiltersList: true },
       propsData: props,
       mocks: {
-        $store: storeMock,
+        $store: mockStore,
       },
     }
   })
 
-  it('should render correct contents', () => {
-    const wrapper = render(SearchGridFilter, options)
-    expect(
-      wrapper.findComponent({ name: 'SearchGridFilter' }).element
-    ).toBeDefined()
-  })
-
-  it('should show search filters when isFilterVisible is true', () => {
-    const wrapper = render(SearchGridFilter, options)
-    expect(wrapper.find('.search-filters').classes()).toContain(
+  it('should show search filters when isFilterVisible is true', async () => {
+    mockStore.state.filter.isFilterVisible = true
+    await render(SearchGridFilter, options)
+    expect(screen.getByTestId('filters-list')).toBeVisible()
+    expect(screen.getByTestId('filters-list')).toHaveClass(
       'search-filters__visible'
     )
   })
 
-  it('should not show search filters when isFilterVisible is false', () => {
-    storeMock.state.filter.isFilterVisible = false
-    const wrapper = render(SearchGridFilter, options)
-    expect(wrapper.find('.search-filters').classes()).not.toContain(
+  it('should not show search filters when isFilterVisible is false', async () => {
+    mockStore.state.filter.isFilterVisible = false
+    await render(SearchGridFilter, options)
+    screen.debug()
+    // not.toBeVisible does not work
+    expect(screen.getByTestId('filters-list')).not.toHaveClass(
       'search-filters__visible'
     )
   })
 
-  it('should not display providers filter when props is set to false', () => {
-    props.showProvidersFilter = false
-    const wrapper = render(SearchGridFilter, options)
-    expect(wrapper.find('.search-filters_providers').element).not.toBeDefined()
+  it('toggles filter', async () => {
+    render(SearchGridFilter, options)
+    const checked = screen.queryAllByRole('checkbox', { checked: true })
+    expect(checked.length).toEqual(0)
+
+    await fireEvent.click(screen.queryByLabelText('Commercial usage'))
+
+    // `getBy` serves as expect because it throws an error if no element is found
+    screen.getByRole('checkbox', { checked: true })
+    screen.getByLabelText('Commercial usage', { checked: true })
   })
 
-  it('toggles filter', () => {
-    const wrapper = render(SearchGridFilter, options)
-    wrapper.vm.toggleFilter({ code: 'foo', filterType: 'bar' })
-    expect(dispatchMock).toHaveBeenCalledWith(`${FILTER}/${TOGGLE_FILTER}`, {
-      code: 'foo',
-      filterType: 'bar',
-      provider: props.provider,
+  it('clears filters', async () => {
+    mockStore.state.filter.filters.licenses[0].checked = true
+    await render(SearchGridFilter, options)
+    // if no checked checkboxes were found, this would raise an error
+    screen.getByRole('checkbox', { checked: true })
+
+    await fireEvent.click(screen.getByText('filter-list.clear'))
+    const checkedFilters = screen.queryAllByRole('checkbox', { checked: true })
+    const uncheckedFilters = screen.queryAllByRole('checkbox', {
+      checked: false,
     })
+    expect(checkedFilters.length).toEqual(0)
+    // Filters are reset with the initial `filterData`
+    expect(uncheckedFilters.length).toEqual(22)
   })
 
-  it('clears filters', () => {
-    const wrapper = render(SearchGridFilter, options)
-    wrapper.vm.clearFilters()
-    expect(dispatchMock).toHaveBeenCalledWith(`${FILTER}/${CLEAR_FILTERS}`)
-  })
+  it('toggles search visibility', async () => {
+    render(SearchGridFilter, options)
+    expect(screen.getByTestId('filters-list')).toBeVisible()
+    expect(screen.getByTestId('filters-list')).toHaveClass(
+      'search-filters__visible'
+    )
 
-  it('toggles search visibility', () => {
-    const wrapper = render(SearchGridFilter, options)
-    wrapper.vm.onToggleSearchGridFilter()
-    expect(commitMock).toHaveBeenCalledWith(
-      `${FILTER}/${SET_FILTER_IS_VISIBLE}`,
-      {
-        isFilterVisible: !storeMock.state.filter.isFilterVisible,
-      }
+    await fireEvent.click(screen.getByText('filter-list.hide'))
+    expect(screen.getByTestId('filters-list')).not.toHaveClass(
+      'search-filters__visible'
     )
   })
 })

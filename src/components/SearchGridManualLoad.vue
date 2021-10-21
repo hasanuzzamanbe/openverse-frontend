@@ -7,27 +7,24 @@
     }"
   >
     <div ref="gridItems" class="search-grid_ctr">
-      <div v-show="!isFetchingImages && includeAnalytics" class="results-meta">
+      <div v-show="!isFetching && includeAnalytics" class="results-meta">
         <span class="caption font-semibold">
           {{ _imagesCount }}
         </span>
-        <div class="hidden desk:block mr-auto pl-6">
-          <SearchRating v-if="_query.q" :search-term="_query.q" />
-        </div>
-        <div class="desk:hidden">
-          <SearchRating v-if="_query.q" :search-term="searchTerm" />
+        <div class="hidden desk:block desk:mr-auto desk:pl-6">
+          <SearchRating v-if="searchTerm" :search-term="searchTerm" />
         </div>
         <SaferBrowsing />
       </div>
       <div class="search-grid-cells">
         <SearchGridCell
-          v-for="(image, index) in _images"
+          v-for="(image, index) in images"
           :key="index"
           :image="image"
         />
       </div>
       <div
-        v-if="isFetchingImagesError"
+        v-if="isFetchingError"
         class="search-grid_notification callout alert"
       >
         <h5>
@@ -36,24 +33,24 @@
               type: $t('browse-page.search-form.audio'),
             })
           }}
-          {{ _errorMessage }}
+          {{ errorMessage }}
         </h5>
       </div>
       <div class="pb-6">
-        <div v-if="!isFetchingImagesError && !isFinished" class="load-more">
+        <div v-if="!isFetchingError && !isFinished" class="load-more">
           <button
-            v-show="!isFetchingImages && includeAnalytics"
+            v-show="!isFetching && includeAnalytics"
             class="button"
             @click="onLoadMoreImages"
             @keyup.enter="onLoadMoreImages"
           >
             <span>{{ $t('browse-page.load') }}</span>
           </button>
-          <LoadingIcon v-show="isFetchingImages" />
+          <LoadingIcon v-show="isFetching" />
         </div>
         <MetaSearchForm
           type="image"
-          :noresult="storeImagesCount === 0"
+          :noresult="imagesCount === 0"
           :query="query"
           :supported="true"
         />
@@ -66,19 +63,12 @@
 import { FETCH_MEDIA } from '~/constants/action-types'
 import { SET_MEDIA } from '~/constants/mutation-types'
 import { IMAGE } from '~/constants/media'
-import { mapActions, mapMutations, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import { SEARCH } from '~/constants/store-modules'
 
 export default {
   name: 'SearchGridManualLoad',
   props: {
-    imagesCount: {
-      default: 0,
-    },
-    images: {
-      default: () => [],
-    },
-    query: {},
     useInfiniteScroll: {
       default: true,
     },
@@ -98,29 +88,24 @@ export default {
     showMetaImageSearch: false,
   }),
   async fetch() {
-    if (!this.storeImages.length) {
+    if (!this.images.length) {
       await this.fetchMedia({
-        ...this.$store.state.search.query,
+        ...this.query,
         mediaType: IMAGE,
       })
     }
   },
   computed: {
-    ...mapState({
-      storeImagesCount: (state) => state.search.imagesCount,
-      currentPage: (state) => state.search.imagePage,
-      _errorMessage: (state) => state.search.errorMessage,
-      storeImages: (state) => state.search.images,
-      isFetchingImages: (state) => state.search.isFetching.images,
-      isFetchingImagesError: (state) => state.search.isFetchingError.images,
-    }),
-    _images() {
-      return this.useInfiniteScroll ? this.storeImages : this.images
-    },
+    ...mapState(SEARCH, [
+      'imagesCount',
+      'imagePage',
+      'errorMessage',
+      'images',
+      'query',
+    ]),
+    ...mapGetters(SEARCH, ['isFetching', 'isFetchingError']),
     _imagesCount() {
-      const count = this.useInfiniteScroll
-        ? this.storeImagesCount
-        : this.imagesCount
+      const count = this.imagesCount
       if (count === 0) {
         return this.$t('browse-page.image-no-results')
       }
@@ -133,10 +118,10 @@ export default {
           })
     },
     _query() {
-      return this.$props.query
+      return this.query
     },
     isFinished() {
-      return this.currentPage >= this.$store.state.search.pageCount.images
+      return this.imagePage >= this.$store.state.search.pageCount.images
     },
   },
   watch: {
@@ -148,14 +133,14 @@ export default {
     },
   },
   methods: {
-    ...mapMutations({ setMedia: `${SEARCH}/${SET_MEDIA}` }),
-    ...mapActions({ fetchMedia: `${SEARCH}/${FETCH_MEDIA}` }),
+    ...mapMutations(SEARCH, { setMedia: SET_MEDIA }),
+    ...mapActions(SEARCH, { fetchMedia: FETCH_MEDIA }),
     searchChanged() {
       this.setMedia({ media: [], page: 1 })
     },
     onLoadMoreImages() {
       const searchParams = {
-        page: this.currentPage + 1,
+        page: this.imagePage + 1,
         shouldPersistMedia: true,
         ...this._query,
       }

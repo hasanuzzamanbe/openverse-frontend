@@ -48,15 +48,9 @@ const AudioDetailPage = {
     }
   },
   computed: {
-    ...mapState({
-      query: (state) => state.search.query,
-      audio: (state) => state.search.audio,
-    }),
+    ...mapState(SEARCH, ['query', 'audio']),
     filter() {
       return this.query.filter
-    },
-    tags() {
-      return this.audio.tags
     },
     fullLicenseName() {
       return getFullLicenseName(this.audio.license, this.audio.license_version)

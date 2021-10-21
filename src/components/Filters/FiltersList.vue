@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4">
+  <aside class="p-4">
     <div class="filterlist-header mt-4 mb-8">
       <h4 class="filter-heading">
         {{ $t('filter-list.filter-by') }}
@@ -19,7 +19,7 @@
         </span>
       </button>
     </div>
-    <form class="filters-form" role="list">
+    <form class="filters-form">
       <FilterChecklist
         v-for="filterType in filterTypes"
         :key="filterType"
@@ -45,7 +45,7 @@
         {{ $t('filter-list.show') }}
       </button>
     </footer>
-  </div>
+  </aside>
 </template>
 
 <script>
@@ -53,6 +53,7 @@ import { mapGetters, mapState } from 'vuex'
 import { kebabize } from '~/utils/format-strings'
 import { AUDIO, IMAGE, VIDEO } from '~/constants/media'
 import FilterChecklist from './FilterChecklist'
+import { FILTER, SEARCH } from '~/constants/store-modules'
 
 export default {
   name: 'FiltersList',
@@ -60,8 +61,8 @@ export default {
     FilterChecklist,
   },
   computed: {
-    ...mapState('search', ['searchType']),
-    ...mapGetters('filter', [
+    ...mapState(SEARCH, ['searchType']),
+    ...mapGetters(FILTER, [
       'audioFiltersForDisplay',
       'imageFiltersForDisplay',
       'videoFiltersForDisplay',

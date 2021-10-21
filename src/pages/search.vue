@@ -33,6 +33,7 @@ import local from '~/utils/local'
 import { screenWidth } from '~/utils/get-browser-info'
 import { ALL_MEDIA, IMAGE } from '~/constants/media'
 import { mapActions, mapMutations, mapState } from 'vuex'
+import { FILTER, SEARCH } from '~/constants/store-modules'
 
 const BrowsePage = {
   name: 'browse-page',
@@ -63,27 +64,23 @@ const BrowsePage = {
     })
   },
   computed: {
-    ...mapState({
-      query: (state) => state.search.query,
-      isFilterVisible: (state) => state.filter.isFilterVisible,
-    }),
+    ...mapState(SEARCH, ['query', 'searchType']),
+    ...mapState(FILTER, ['isFilterFisible']),
     mediaType() {
       // Default to IMAGE until media search/index is generalized
-      return this.$store.state.search.searchType !== ALL_MEDIA
-        ? this.$store.state.search.searchType
-        : IMAGE
+      return this.searchType !== ALL_MEDIA ? this.searchType : IMAGE
     },
   },
   methods: {
-    ...mapActions('search', {
+    ...mapActions(SEARCH, {
       fetchMedia: FETCH_MEDIA,
       setSearchTypeFromUrl: SET_SEARCH_TYPE_FROM_URL,
     }),
-    ...mapActions('filter', { setFiltersFromUrl: SET_FILTERS_FROM_URL }),
-    ...mapMutations('search', {
+    ...mapActions(FILTER, { setFiltersFromUrl: SET_FILTERS_FROM_URL }),
+    ...mapMutations(SEARCH, {
       setQuery: SET_QUERY,
     }),
-    ...mapMutations('filter', {
+    ...mapMutations(FILTER, {
       setFilterVisibility: SET_FILTER_IS_VISIBLE,
     }),
     getMediaItems(params, mediaType) {
@@ -111,7 +108,7 @@ const BrowsePage = {
       if (newQuery) {
         const newPath = this.localePath({
           path: this.$route.path,
-          query: this.$store.state.search.query,
+          query: newQuery,
         })
         this.$router.push(newPath)
         this.getMediaItems(newQuery, this.mediaType)

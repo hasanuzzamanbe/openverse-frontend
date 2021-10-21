@@ -17,7 +17,7 @@
     "generate": "nuxt generate",
     "start": "nuxt start",
     "storybook": "nuxt storybook",
-    "test": "jest -u",
+    "test": "jest",
     "test:watch": "jest --collectCoverage=false --watch",
     "test:unit": "jest --collectCoverage=false",
     "test:e2e": "cypress open",
