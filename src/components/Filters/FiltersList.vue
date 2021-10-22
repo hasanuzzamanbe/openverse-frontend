@@ -1,5 +1,5 @@
 <template>
-  <aside class="p-4">
+  <div class="p-4">
     <div class="filterlist-header mt-4 mb-8">
       <h4 class="filter-heading">
         {{ $t('filter-list.filter-by') }}
@@ -19,7 +19,7 @@
         </span>
       </button>
     </div>
-    <form class="filters-form">
+    <form class="filters-form" role="list">
       <FilterChecklist
         v-for="filterType in filterTypes"
         :key="filterType"
@@ -45,7 +45,7 @@
         {{ $t('filter-list.show') }}
       </button>
     </footer>
-  </aside>
+  </div>
 </template>
 
 <script>

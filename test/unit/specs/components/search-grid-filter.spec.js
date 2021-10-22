@@ -28,7 +28,7 @@ const initialFilters = {
 describe('SearchGridFilter', () => {
   let options = {}
   let props = null
-  let mockStore
+  let storeMock
   let localVue
   let filters
 
@@ -36,7 +36,7 @@ describe('SearchGridFilter', () => {
     localVue = createLocalVue()
     localVue.use(Vuex)
     filters = clonedeep(initialFilters)
-    mockStore = new Vuex.Store({
+    storeMock = new Vuex.Store({
       modules: {
         filter: {
           namespaced: true,
@@ -61,13 +61,13 @@ describe('SearchGridFilter', () => {
     options = {
       propsData: props,
       mocks: {
-        $store: mockStore,
+        $store: storeMock,
       },
     }
   })
 
   it('should show search filters when isFilterVisible is true', async () => {
-    mockStore.state.filter.isFilterVisible = true
+    storeMock.state.filter.isFilterVisible = true
     await render(SearchGridFilter, options)
     expect(screen.getByTestId('filters-list')).toBeVisible()
     expect(screen.getByTestId('filters-list')).toHaveClass(
@@ -76,9 +76,8 @@ describe('SearchGridFilter', () => {
   })
 
   it('should not show search filters when isFilterVisible is false', async () => {
-    mockStore.state.filter.isFilterVisible = false
+    storeMock.state.filter.isFilterVisible = false
     await render(SearchGridFilter, options)
-    screen.debug()
     // not.toBeVisible does not work
     expect(screen.getByTestId('filters-list')).not.toHaveClass(
       'search-filters__visible'
@@ -98,7 +97,7 @@ describe('SearchGridFilter', () => {
   })
 
   it('clears filters', async () => {
-    mockStore.state.filter.filters.licenses[0].checked = true
+    storeMock.state.filter.filters.licenses[0].checked = true
     await render(SearchGridFilter, options)
     // if no checked checkboxes were found, this would raise an error
     screen.getByRole('checkbox', { checked: true })

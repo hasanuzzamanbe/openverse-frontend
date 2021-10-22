@@ -10,7 +10,7 @@ describe('HomeLicenseFilter', () => {
   let localVue = null
   let dispatchMock = null
   let toggleMock = null
-  let mockStore = null
+  let storeMock = null
 
   beforeEach(() => {
     dispatchMock = jest.fn()
@@ -18,7 +18,7 @@ describe('HomeLicenseFilter', () => {
 
     localVue = createLocalVue()
     localVue.use(Vuex)
-    mockStore = new Vuex.Store({
+    storeMock = new Vuex.Store({
       modules: {
         filter: {
           namespaced: true,
@@ -38,7 +38,7 @@ describe('HomeLicenseFilter', () => {
       },
     })
     options = {
-      store: mockStore,
+      store: storeMock,
     }
   })
 
@@ -55,7 +55,7 @@ describe('HomeLicenseFilter', () => {
   })
 
   it('dispatches `TOGGLE_FILTER` when checkboxes selected', async () => {
-    mockStore.dispatch = dispatchMock
+    storeMock.dispatch = dispatchMock
     render(HomeLicenseFilter, options)
     const commercialCheckbox = screen.queryByLabelText('Commercial usage')
     await commercialCheckbox.click()

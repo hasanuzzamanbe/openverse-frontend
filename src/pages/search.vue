@@ -65,7 +65,7 @@ const BrowsePage = {
   },
   computed: {
     ...mapState(SEARCH, ['query', 'searchType']),
-    ...mapState(FILTER, ['isFilterFisible']),
+    ...mapState(FILTER, ['isFilterVisible']),
     mediaType() {
       // Default to IMAGE until media search/index is generalized
       return this.searchType !== ALL_MEDIA ? this.searchType : IMAGE

@@ -5,7 +5,7 @@ import Vuex from 'vuex'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-const mockStore = new Vuex.Store({
+const storeMock = new Vuex.Store({
   modules: {
     filter: {
       namespaced: true,
@@ -31,7 +31,7 @@ const options = {
     SearchGridManualLoad: true,
   },
   localVue,
-  store: mockStore,
+  store: storeMock,
 }
 
 describe('Search Grid Wrapper', () => {

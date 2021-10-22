@@ -5,7 +5,7 @@ import Vuex from 'vuex'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-const mockStore = new Vuex.Store({
+const storeMock = new Vuex.Store({
   modules: {
     filter: {
       namespaced: true,
@@ -27,7 +27,7 @@ describe('SearchGridForm', () => {
           path: '/search',
         },
       },
-      store: mockStore,
+      store: storeMock,
     })
 
     expect(wrapper.find('form').vm).toBeDefined()

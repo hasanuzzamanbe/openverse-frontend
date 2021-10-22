@@ -9,7 +9,7 @@ import { IMAGE } from '~/constants/media'
 describe('SearchGrid', () => {
   let options = {}
   let commitMock = null
-  let mockStore
+  let storeMock
   let searchStoreMock
 
   beforeEach(() => {
@@ -37,7 +37,7 @@ describe('SearchGrid', () => {
         [SET_MEDIA]: commitMock,
       },
     }
-    mockStore = new Vuex.Store({
+    storeMock = new Vuex.Store({
       modules: {
         filter: {
           namespaced: true,
@@ -50,7 +50,7 @@ describe('SearchGrid', () => {
       },
     })
     options = {
-      store: mockStore,
+      store: storeMock,
       stubs: {
         SaferBrowsing: true,
         LoadingIcon: true,
@@ -62,15 +62,14 @@ describe('SearchGrid', () => {
         includeAnalytics: true,
       },
       mocks: {
-        $store: mockStore,
-        store: mockStore,
+        $store: storeMock,
+        store: storeMock,
       },
     }
   })
 
   it('should render correct contents', () => {
     const wrapper = render(SearchGrid, options)
-    console.log(wrapper.html())
     expect(wrapper.find('section').element).toBeDefined()
     expect(wrapper.find('.load-more').element).toBeDefined()
   })

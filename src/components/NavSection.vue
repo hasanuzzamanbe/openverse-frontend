@@ -128,6 +128,7 @@
 import { SET_Q } from '~/constants/mutation-types'
 import Dropdown from '~/components/Dropdown'
 import { SEARCH } from '~/constants/store-modules'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'NavSection',
@@ -144,9 +145,11 @@ export default {
     },
   },
   methods: {
+    ...mapMutations(SEARCH, { setSearchTerm: SET_Q }),
     onSubmit() {
       const q = this.form.searchTerm
-      this.$store.commit(`${SEARCH}/${SET_Q}`, { q })
+      const theArgs = { q }
+      this.setSearchTerm(theArgs)
       const newPath = this.localePath({
         path: '/search',
         query: { q },

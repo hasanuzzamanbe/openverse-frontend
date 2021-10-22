@@ -52,13 +52,10 @@ import { FILTER, SEARCH } from '~/constants/store-modules'
 
 export default {
   name: 'AudioResultsList',
-  props: {
-    query: {},
-  },
   async fetch() {
     if (!this.audios.length) {
       await this.fetchMedia({
-        ...this.$store.state.search.query,
+        ...this.query,
         mediaType: AUDIO,
       })
     }
@@ -70,6 +67,7 @@ export default {
       'audiosCount',
       'audioPage',
       'pageCount',
+      'query',
     ]),
     ...mapGetters(SEARCH, ['isFetching', 'isFetchingError']),
     ...mapState(FILTER, ['isFilterVisible']),

@@ -7,7 +7,7 @@ import Vuex from 'vuex'
 describe('FilterDisplay', () => {
   const localVue = createLocalVue()
   localVue.use(Vuex)
-  const mockStore = new Vuex.Store({
+  const storeMock = new Vuex.Store({
     modules: {
       search: {
         namespaced: true,
@@ -34,7 +34,7 @@ describe('FilterDisplay', () => {
   })
   const options = {
     localVue,
-    store: mockStore,
+    store: storeMock,
   }
 
   it('should render correct contents', () => {

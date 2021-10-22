@@ -9,7 +9,7 @@ import clonedeep from 'lodash.clonedeep'
 describe('HeroSection', () => {
   let options = {}
   let localVue
-  let mockStore
+  let storeMock
   let filters
   const routerMock = { push: jest.fn() }
 
@@ -17,7 +17,7 @@ describe('HeroSection', () => {
     localVue = createLocalVue()
     localVue.use(Vuex)
     filters = clonedeep(filterData)
-    mockStore = new Vuex.Store({
+    storeMock = new Vuex.Store({
       modules: {
         filter: {
           namespaced: true,
@@ -36,7 +36,7 @@ describe('HeroSection', () => {
     options = {
       mocks: {
         $router: routerMock,
-        $store: mockStore,
+        $store: storeMock,
       },
     }
   })
