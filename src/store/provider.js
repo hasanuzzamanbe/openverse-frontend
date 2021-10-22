@@ -15,6 +15,7 @@ import {
   SET_PROVIDERS_FILTERS,
 } from '~/constants/mutation-types'
 import { FILTER } from '~/constants/store-modules'
+import { capital } from 'case'
 
 const AudioProviderService = MediaProviderService(AUDIO)
 const ImageProviderService = MediaProviderService(IMAGE)
@@ -40,6 +41,22 @@ export const state = () => ({
   isFetchingAudioProviders: false,
   isFetchingImageProviders: false,
 })
+
+export const getters = {
+  getProviderName: (state, getters, rootState) => (providerCode) => {
+    const mediaType = rootState.search.mediaType
+    const providersList = state[`${mediaType}Providers`]
+    if (!providersList) {
+      return capital(providerCode) || ''
+    }
+
+    const provider = providersList.filter(
+      (p) => p.source_name === providerCode
+    )[0]
+
+    return provider ? provider.display_name : capital(providerCode) || ''
+  },
+}
 
 export const createActions = (services) => ({
   async [FETCH_MEDIA_PROVIDERS]({ dispatch }, params) {
@@ -89,7 +106,6 @@ export const actions = createActions({
   [AUDIO]: AudioProviderService,
 })
 
-/* eslint no-param-reassign: ["error", { "props": false }] */
 export const mutations = {
   [FETCH_MEDIA_PROVIDERS_START](_state, { mediaType }) {
     if (mediaType === AUDIO) {
@@ -118,6 +134,7 @@ export const mutations = {
 }
 
 export default {
+  getters,
   state,
   mutations,
   actions,
