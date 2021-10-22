@@ -394,7 +394,8 @@ describe('Search Store', () => {
           resultUuid: 'foo',
           resultRank: 0,
           sessionId: context.rootState.user.usageSessionId,
-        }
+        },
+        { root: true }
       )
     })
 
@@ -452,7 +453,8 @@ describe('Search Store', () => {
           resultUuid: 'foo',
           resultRank: 0,
           sessionId: context.rootState.user.usageSessionId,
-        }
+        },
+        { root: true }
       )
     })
 

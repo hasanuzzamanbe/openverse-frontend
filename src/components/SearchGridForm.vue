@@ -70,7 +70,7 @@ export default {
   name: 'SearchGridForm',
   data: () => ({ searchTermsModel: null }),
   computed: {
-    ...mapState(FILTER, ['filter/isFilterVisible']),
+    ...mapState(FILTER, ['isFilterVisible']),
     ...mapState(SEARCH, ['query']),
     searchTerms() {
       return this.query.q

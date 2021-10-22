@@ -120,12 +120,16 @@ export const createActions = (services) => ({
       })
   },
   async [FETCH_AUDIO]({ commit, dispatch, state, rootState }, params) {
-    dispatch(`${USAGE_DATA}/${SEND_RESULT_CLICKED_EVENT}`, {
-      query: state.query.q,
-      resultUuid: params.id,
-      resultRank: findIndex(state.audios, (img) => img.id === params.id),
-      sessionId: rootState.user.usageSessionId,
-    })
+    dispatch(
+      `${USAGE_DATA}/${SEND_RESULT_CLICKED_EVENT}`,
+      {
+        query: state.query.q,
+        resultUuid: params.id,
+        resultRank: findIndex(state.audios, (img) => img.id === params.id),
+        sessionId: rootState.user.usageSessionId,
+      },
+      { root: true }
+    )
     commit(SET_AUDIO, { audio: {} })
     await services[AUDIO].getMediaDetail(params)
       .then(({ data }) => {
@@ -140,12 +144,16 @@ export const createActions = (services) => ({
       })
   },
   async [FETCH_IMAGE]({ commit, dispatch, state, rootState }, params) {
-    dispatch(`${USAGE_DATA}/${SEND_RESULT_CLICKED_EVENT}`, {
-      query: state.query.q,
-      resultUuid: params.id,
-      resultRank: findIndex(state.images, (img) => img.id === params.id),
-      sessionId: rootState.user.usageSessionId,
-    })
+    dispatch(
+      `${USAGE_DATA}/${SEND_RESULT_CLICKED_EVENT}`,
+      {
+        query: state.query.q,
+        resultUuid: params.id,
+        resultRank: findIndex(state.images, (img) => img.id === params.id),
+        sessionId: rootState.user.usageSessionId,
+      },
+      { root: true }
+    )
 
     commit(SET_IMAGE, { image: {} })
     await services[IMAGE].getMediaDetail(params)
