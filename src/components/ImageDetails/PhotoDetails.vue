@@ -42,8 +42,8 @@
       </div>
       <ContentReportForm
         v-if="isReportFormVisible"
-        :image-id="image.id"
         :image="image"
+        :provider-name="providerName"
         data-testid="content-report-form"
         class="mt-2 text-left"
         @close-form="onCloseReportForm"
@@ -165,7 +165,8 @@ import {
 } from '~/constants/usage-data-analytics-types'
 import attributionHtml from '~/utils/attribution-html'
 import { getFullLicenseName } from '~/utils/license'
-import { USAGE_DATA } from '~/constants/store-modules'
+import { PROVIDER, USAGE_DATA } from '~/constants/store-modules'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'PhotoDetails',
@@ -187,11 +188,15 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(PROVIDER, ['getProviderName']),
     imgUrl() {
-      return this.image && this.image.url ? this.image.url : this.thumbnail
+      return this.isLoaded ? this.image.url : this.thumbnail
     },
     isLoaded() {
       return this.image && !!this.image.url
+    },
+    providerName() {
+      return this.image ? this.getProviderName(this.image.provider) : ''
     },
     sketchFabUid() {
       if (this.image.source !== 'sketchfab' || this.sketchFabfailure) {
