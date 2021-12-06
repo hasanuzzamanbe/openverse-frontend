@@ -15,6 +15,7 @@
       <span class="text-sr">{{ $t('modal.close') }}</span>
       <VIcon :icon-path="closeIcon" />
     </VButton>
+    <VContentSwitcher class="flex-grow" />
   </div>
 </template>
 
@@ -32,12 +33,14 @@ import { useWindowScroll } from '~/composables/use-window-scroll'
 
 import closeIcon from '~/assets/icons/close.svg'
 
+import VContentSwitcher from '~/components/VHeader/VContentSwitcher.vue'
 import VIcon from '~/components/VIcon/VIcon.vue'
 import VLogoLoader from '~/components/VLogoLoader/VLogoLoader.vue'
 
 const VHeader = defineComponent({
   name: 'VHeader',
   components: {
+    VContentSwitcher,
     VIcon,
     VLogoLoader,
   },
