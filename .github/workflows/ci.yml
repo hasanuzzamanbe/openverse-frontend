@@ -42,3 +42,6 @@ jobs:
 
       - name: Run tests
         run: npm run i18n:get-translations && npm run test:unit
+
+      - name: Run Storybook smoke-test
+        run: npm run storybook -- --ci --smoke-test
