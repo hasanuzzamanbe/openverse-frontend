@@ -15,7 +15,12 @@
       <span class="text-sr">{{ $t('modal.close') }}</span>
       <VIcon :icon-path="closeIcon" />
     </VButton>
-    <VContentSwitcher class="flex-grow" />
+    <VContentSwitcher
+      class="flex-grow self-center"
+      :route="route"
+      :is-header-scrolled="isHeaderScrolled"
+      :is-search="isSearch"
+    />
   </div>
 </template>
 
