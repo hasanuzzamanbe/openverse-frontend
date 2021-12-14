@@ -19,6 +19,7 @@
       class="flex-grow self-center"
       :route="route"
       :is-header-scrolled="isHeaderScrolled"
+      :is-md-screen="isMdScreen"
       :is-search="isSearch"
     />
   </div>
@@ -51,7 +52,7 @@ const VHeader = defineComponent({
   },
   setup() {
     const { store } = useContext()
-    const { isSearch } = useSearchRoute()
+    const { isSearch, route } = useSearchRoute()
     const { isHeaderScrolled } = useWindowScroll()
     const isMdScreen = isScreen('md')
 
@@ -82,7 +83,9 @@ const VHeader = defineComponent({
       currentOverlay,
       isFetching,
       isHeaderScrolled,
+      isMdScreen,
       isSearch,
+      route,
     }
   },
 })
