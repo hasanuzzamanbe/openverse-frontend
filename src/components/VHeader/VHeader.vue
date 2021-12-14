@@ -6,32 +6,30 @@
     <NuxtLink to="/">
       <VLogoLoader :status="isFetching ? 'loading' : 'idle'" />
     </NuxtLink>
-    <VButton
-      v-if="!!currentOverlay"
-      variant="action-menu"
-      class="self-center"
-      @click="closeOverlay"
-    >
-      <span class="text-sr">{{ $t('modal.close') }}</span>
-      <VIcon :icon-path="closeIcon" />
-    </VButton>
+
     <VContentSwitcher
       class="flex-grow self-center"
       :route="route"
       :is-header-scrolled="isHeaderScrolled"
       :is-md-screen="isMdScreen"
       :is-search="isSearch"
+      :is-overlay-open="showOverlay"
+      @open-overlay="handleOpenOverlayClick"
     />
+    <VButton
+      v-if="showOverlay"
+      variant="action-menu-secondary"
+      class="ms-auto self-center"
+      @click="closeOverlay"
+    >
+      <span class="text-sr">{{ $t('modal.close') }}</span>
+      <VIcon :icon-path="closeIcon" />
+    </VButton>
   </div>
 </template>
 
 <script>
-import {
-  computed,
-  defineComponent,
-  ref,
-  useContext,
-} from '@nuxtjs/composition-api'
+import { computed, defineComponent, useContext } from '@nuxtjs/composition-api'
 
 import { isScreen } from '~/composables/use-media-query'
 import { useSearchRoute } from '~/composables/use-search-route'
@@ -42,6 +40,7 @@ import closeIcon from '~/assets/icons/close.svg'
 import VContentSwitcher from '~/components/VHeader/VContentSwitcher.vue'
 import VIcon from '~/components/VIcon/VIcon.vue'
 import VLogoLoader from '~/components/VLogoLoader/VLogoLoader.vue'
+import { useOverlay } from '~/composables/use-overlay'
 
 const VHeader = defineComponent({
   name: 'VHeader',
@@ -55,32 +54,22 @@ const VHeader = defineComponent({
     const { isSearch, route } = useSearchRoute()
     const { isHeaderScrolled } = useWindowScroll()
     const isMdScreen = isScreen('md')
-
-    /** @type {import('@nuxtjs/composition-api').Ref<null|'filters'|'content-switcher'>} */
-    const currentOverlay = ref(null)
-    /**
-     * When an overlay is opened on mobile, this sets the current overlay name
-     * @param {'filters'|'content-switcher'} overlay
-     */
-    // eslint-disable-next-line no-unused-vars
-    const setCurrentOverlay = (overlay) => {
-      // Overlay can only be set on mobile screen
-      if (isMdScreen.value) return
-      currentOverlay.value = overlay
-    }
-    const closeOverlay = () => {
-      currentOverlay.value = null
-    }
+    const { showOverlay, closeOverlay, openOverlay } = useOverlay()
 
     /**  @type {import('@nuxtjs/composition-api').ComputedRef<Boolean>} */
     const isFetching = computed(
       () => store.getters['media/fetchingState'].isFetching
     )
+    const handleOpenOverlayClick = () => {
+      openOverlay('content-switcher')
+    }
 
     return {
       closeIcon,
       closeOverlay,
-      currentOverlay,
+      handleOpenOverlayClick,
+
+      showOverlay,
       isFetching,
       isHeaderScrolled,
       isMdScreen,
